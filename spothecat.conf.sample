@@ -1,0 +1,15 @@
+[DATABASE]
+dbname = 'location'
+dbuser = 'postgres'
+dbpass =
+dbhost = 'localhost'
+
+[PHONE]
+ffonip = '192.168.0.27'
+ffonuser =
+ffonpass =
+ffonport = 8022
+ffonkey =
+
+[GMAP]
+apikey =
