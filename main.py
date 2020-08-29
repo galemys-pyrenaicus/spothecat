@@ -16,16 +16,7 @@ dbcred = config['DATABASE']
 ffoncred = config['PHONE']
 gmapcred = config['GMAP']
 
-client = paramiko.SSHClient()
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect(hostname=ffoncred['ip'], port=int(ffoncred['port']), key_filename='/home/desman/.ssh/id_rsa', banner_timeout=300)
-stdin, stdout, stderr = client.exec_command('sh /data/data/com.termux/files/home/scrt/myloc.sh')
-time.sleep(15)
-sftp = client.open_sftp()
-remotepath = '/data/data/com.termux/files/home/storage/loca'
-localpath = 'loca'
-sftp.get(remotepath, localpath)
-client.close()
+obtain_location() #Comment out to test without network connection and copy loca.sample to loca
 
 connlocadb = psycopg2.connect(dbname=dbcred['dbname'], user=dbcred['dbuser'], password=dbcred['dbpass'], host=dbcred['dbhost'])
 cursor = connlocadb.cursor()
@@ -43,3 +34,15 @@ queryres = cursor.fetchall()
 for row in queryres:
     gmap.marker(row[0],row[1], color='cornflowerblue', title=row[2])
 gmap.draw('whereami_map.html')
+
+def obtain_location():
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname=ffoncred['ip'], port=int(ffoncred['port']), key_filename='/home/desman/.ssh/id_rsa', banner_timeout=300)
+    stdin, stdout, stderr = client.exec_command('sh /data/data/com.termux/files/home/scrt/myloc.sh')
+    time.sleep(15)
+    sftp = client.open_sftp()
+    remotepath = '/data/data/com.termux/files/home/storage/loca'
+    localpath = 'loca'
+    ftp.get(remotepath, localpath)
+    client.close()
