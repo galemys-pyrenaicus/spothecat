@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block title %}Spot the cat{% endblock %}
+{% block header %}
+<div class="header-right">
+  <a class="active" href="#home">Войти</a>
+</div>
+{% endblock %}
+{% block body %}
+  That's main page
+  <a href="spothecat/{{ user }}">Go to userpage</a>
+{% endblock %}
+{% block hidesidebar %} 
+  visible = 'False'
+{% endblock %}

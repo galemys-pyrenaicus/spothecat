@@ -17,12 +17,16 @@ config.read('spothecat.conf')
 dbcred = config['DATABASE']
 ffoncred = config['PHONE']
 gmapcred = config['GMAP']
+logs = config['LOGGING']
+logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
+
+logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
 
 def check_availiability(host, retrying=3):
     for i in range(retrying):
         if os.system("ping -c 1 " + host+" > /dev/null") == 0:
+            logging.info("Phone is online")
             return True
-        print("Testing connection")
         time.sleep(20)
     else:
         return False
@@ -42,18 +46,18 @@ def obtain_location(oncemore=False):
             raise FileNotFoundError;
         client.close()
     except paramiko.ssh_exception.AuthenticationException:
-        print("Auth error while connecting to %s", (ffoncred['ip']))
+        logging.critical("Auth error while connecting to %s", (ffoncred['ip']))
     except paramiko.ssh_exception.BadAuthenticationType:
-        print("Auth type error while connecting to %s , check config", (ffoncred['ip']))
+        logging.critical("Auth type error while connecting to %s , check config", (ffoncred['ip']))
     except paramiko.ssh_exception.SSHException:
-        print("Error connecting phone")
+        logging.error("Error connecting phone")
     except FileNotFoundError:
         if oncemore == False:
-            print("There is a problem with location file, retrying once more in 30s")
+            logging.warning("Phone is online, but there is a problem with location data, retrying once more in 30s")
             time.sleep(30)
             obtain_location(True)
         else:
-            print("There is a problem with location data, probably gps signal lost")
+            logging.error("Phone is online, but there is a problem with location data, probably gps signal lost")
             sys.exit()
 
 def draw_map():
@@ -73,13 +77,15 @@ def draw_map():
                 gmap.marker(row[0],row[1], color='cornflowerblue', title=row[2])
             gmap.draw('whereami_map.html')
     except:
-        print("Exception with loca or db")
+        print("Exception with db")
 
 def main():
+    logging.info("Starting the script...")
     if check_availiability(ffoncred['IP']) == True:
         obtain_location() #Comment out to test without network connection and copy loca.sample to loca
         draw_map()
     else:
-        print ("Can't reach host")
+        logging.error("Can't reach host")
 
-main()
+if __name__ == "__main__":
+    main()

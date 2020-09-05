@@ -13,3 +13,7 @@ ffonkey =
 
 [GMAP]
 apikey =
+
+[LOGGING]
+level = WARNING
+path = /var/log/spothecat.log
