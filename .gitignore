@@ -1,5 +1,9 @@
+#Sensible
 loca
-connection.py
 loca_recieved
 spothecat.conf
 whereami_map.html
+map_jail/
+
+#Other
+*.pyc

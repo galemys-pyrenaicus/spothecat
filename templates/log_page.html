@@ -2,6 +2,6 @@
 {% block title %}Spot the cat{% endblock %}
 {% block body %}
 <div>
-  <iframe src='http://192.168.0.18:5000/logs/' width=80% id="log" origin="192.168.0.18:5000"></iframe>
+  <iframe src='http://{{ srv_address }}:{{ srv_port }}/logs/' scrolling=no style="position: absolute; width:80%; height:80%; " id="log" origin="{{ address }}:{{ port }}"></iframe>
 </div>
 {% endblock %}

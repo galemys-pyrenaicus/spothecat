@@ -3,7 +3,7 @@
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 <title>Google Maps - gmplot</title>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=visualization&key=AIzaSyAS9EHS7nFAYUa9DtaNB3_dq2tfR-q8jQw"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?libraries=visualization&key=MYKEY"></script>
 <script type="text/javascript">
     function initialize() {
         var map = new google.maps.Map(document.getElementById("map_canvas"), {
@@ -18,7 +18,7 @@
 
         new google.maps.Marker({
             position: new google.maps.LatLng(60.000000, 30.000000),
-            title: "123:43",
+            title: "12:34",
             icon: marker_icon_6495ED,
             map: map
         });

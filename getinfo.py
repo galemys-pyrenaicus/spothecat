@@ -5,7 +5,7 @@ import signal
 import psycopg2
 from psycopg2 import sql
 import paramiko
-import time
+import time, threading
 import traceback
 import logging
 import configparser
@@ -13,14 +13,18 @@ import os
 import sys
 
 config = configparser.ConfigParser()
-config.read('spothecat.conf')
-dbcred = config['DATABASE']
-ffoncred = config['PHONE']
-gmapcred = config['GMAP']
-logs = config['LOGGING']
-logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
+config.read('/etc/spothecat/spothecat.conf')
 
-logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
+try:
+    dbcred = config['DATABASE']
+    ffoncred = config['PHONE']
+    gmapcred = config['GMAP']
+    logs = config['LOGGING']
+    logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
+    logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
+except:
+    print ("Problem with config")
+    sys.exit()
 
 def check_availiability(host, retrying=3):
     for i in range(retrying):
@@ -35,9 +39,9 @@ def obtain_location(oncemore=False):
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(hostname=ffoncred['ip'], port=int(ffoncred['port']), key_filename='/home/desman/.ssh/id_rsa', banner_timeout=300)
+        client.connect(hostname=ffoncred['ip'], port=int(ffoncred['port']), key_filename=ffoncred['key'], banner_timeout=300)
         stdin, stdout, stderr = client.exec_command('sh /data/data/com.termux/files/home/scrt/myloc.sh')
-        time.sleep(20)
+        time.sleep(40)
         sftp = client.open_sftp()
         remotepath = '/data/data/com.termux/files/home/storage/loca'
         localpath = 'loca'
@@ -75,9 +79,12 @@ def draw_map():
             queryres = cursor.fetchall()
             for row in queryres:
                 gmap.marker(row[0],row[1], color='cornflowerblue', title=row[2])
-            gmap.draw('whereami_map.html')
+            gmap.draw('templates/whereami_map.html')
     except:
         print("Exception with db")
+
+def getdelay():
+    return(config['OTHER']['period'])
 
 def main():
     logging.info("Starting the script...")
@@ -86,6 +93,7 @@ def main():
         draw_map()
     else:
         logging.error("Can't reach host")
+        sys.exit()
 
 if __name__ == "__main__":
     main()

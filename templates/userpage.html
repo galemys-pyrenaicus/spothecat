@@ -2,7 +2,30 @@
 {% block title %}Spot the cat{% endblock %}
 {% block body %}
 <div>
-  <p><a href="http://192.168.0.18:5000/start/"> Start </a></p>
-  <iframe src="http://192.168.0.18:5000/desman/map" width=80% id="map"></iframe>
+  <iframe src="http://{{ srv_address }}:{{ srv_port }}/{{ user }}/map" id="map" style="position: absolute; width:80%; height:70%; border:none;">
+  </iframe>
 </div>
+{% if started %}
+<div class='bottomdiv'>
+    <div id='bottomformdiv'>
+      <form action='/stopscript' method='POST' width='50px'>
+        <input type='submit' name='run' value = 'Остановить' class='btn' style="background-color: red;"/>
+      </form>
+    </div>
+    <div id='bottomtitlediv'>
+        <p>Задание запущено</p>
+    </div>
+</div>
+{% else %}
+<div class="bottomdiv" style="background-color: #F08080;">
+    <div id='bottomformdiv'>
+      <form action='/runscript' method='POST' width='50px'>
+        <input type='submit' name='run' value = 'Запустить' class='btn'/>
+      </form>
+    </div>
+    <div id='bottomtitlediv'>
+        <p>Задание не запущено</p>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
