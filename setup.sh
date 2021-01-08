@@ -8,4 +8,4 @@ cd /opt
 git clone https://github.com/galemys-pyrenaicus/spothecat
 mkdir /etc/spothecat
 mv /opt/spothecat/spothecat.conf.sample /etc/spothecat/spothecat.conf.sample
-pip3 install Flask flask-login gmplot configparser
+pip3 install Flask flask-login gmplot configparser psycopg2
