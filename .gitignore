@@ -1,3 +1,7 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
 #Sensible
 loca
 loca_recieved
@@ -7,3 +11,4 @@ map_jail/
 
 #Other
 *.pyc
+.cache

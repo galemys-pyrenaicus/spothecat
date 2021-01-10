@@ -12,7 +12,7 @@ port =
 key =
 
 [SERVER]
-address =
+address = localhost
 port = 5000
 
 [GMAP]
