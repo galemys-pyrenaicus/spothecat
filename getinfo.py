@@ -11,20 +11,7 @@ import logging
 import configparser
 import os
 import sys
-
-config = configparser.ConfigParser()
-config.read('/etc/spothecat/spothecat.conf')
-
-try:
-    dbcred = config['DATABASE']
-    ffoncred = config['PHONE']
-    gmapcred = config['GMAP']
-    logs = config['LOGGING']
-    logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
-    logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
-except:
-    print ("Problem with config")
-    sys.exit()
+import server
 
 def check_availiability(host, retrying=3):
     for i in range(retrying):
@@ -86,7 +73,18 @@ def draw_map():
 def getdelay():
     return(config['OTHER']['period'])
 
+def get_config():
+    all_cred = server.pass_config()
+    dbcred = all_cred[0]
+    ffoncred = all_cred[1]
+    gmapcred = all_cred[2]
+    logs = all_cred[3]
+    srv = all_cred[4]
+    logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
+    logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
+
 def main():
+    get_config()
     logging.info("Starting the script...")
     if check_availiability(ffoncred['IP']) == True:
         obtain_location() #Comment out to test without network connection and copy loca.sample to loca
@@ -94,6 +92,3 @@ def main():
     else:
         logging.error("Can't reach host")
         sys.exit()
-
-if __name__ == "__main__":
-    main()

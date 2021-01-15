@@ -5,12 +5,31 @@ import flask_login
 import wrapper
 import os
 import configparser
+import hashlib, uuid
+import psycopg2
+from psycopg2 import sql
+import logging
 
 config = configparser.ConfigParser()
 config.read('/etc/spothecat/spothecat.conf')
-srv = config['SERVER']
+
+try:
+    dbcred = config['DATABASE']
+    ffoncred = config['PHONE']
+    gmapcred = config['GMAP']
+    logs = config['LOGGING']
+    srv = config['SERVER']
+    logformat = ['%(asctime)s [%(levelname)s] - %(message)s', '%d-%b-%y %H:%M:%S']
+    logging.basicConfig(filename=logs['path'], format=logformat[0], level=logs['level'], datefmt=logformat[1])
+except:
+    print ("Problem with config")
+    sys.exit()
+
+def pass_config():
+    return [dbcred, ffoncred, gmapcred, logs, srv]
 
 app = Flask(__name__)
+pass_config()
 user='desman'
 
 try:
@@ -70,6 +89,18 @@ def login():
 
     return 'Bad login'
 
+@app.route('/adduser', methods=['GET', 'POST'])
+def adduser():
+    if request.method == "POST":
+        req = request.form
+        adduser_username = req.get('username')
+        adduser_pass_hashed = hashlib.sha256(req.get('password').encode('utf8')).hexdigest()
+        connlocadb = psycopg2.connect(dbname=dbcred['dbname'], user=dbcred['dbuser'], password=dbcred['dbpass'], host=dbcred['dbhost'])
+        cursor = connlocadb.cursor()
+        query = "INSERT INTO users (login, pass_hash, role, active) VALUES (%s, %s, %s, %s)"
+        cursor.execute(query, (adduser_username, adduser_pass_hashed, 'admin', 'true'))
+        connlocadb.commit()
+    return render_template("access_list.html", user=flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
 
 @app.route('/protected')
 @flask_login.login_required

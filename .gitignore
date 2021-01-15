@@ -12,3 +12,4 @@ map_jail/
 #Other
 *.pyc
 .cache
+test_func*
