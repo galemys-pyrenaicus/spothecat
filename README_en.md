@@ -5,7 +5,7 @@ Lightweight self-hosted Android device location service.
 Service requires SSH access to Android device and it's static ip-address, it could be achieved by e.g. L2TP connection between server and phone.
 You could found an IPsec/L2TP autoinstall script for VPS/EC2 Instance in [this repository](https://github.com/hwdsl2/setup-ipsec-vpn) made by **_hwdsl2_**.
 
-Configuring Termux to get SSH access: [https://wiki.termux.com/wiki/Remote_Access ]https://wiki.termux.com/wiki/Remote_Access
+Configuring Termux to get SSH access: [https://wiki.termux.com/wiki/Remote_Access](https://wiki.termux.com/wiki/Remote_Access)
 
 Service should be installed by running [setup.sh](https://github.com/galemys-pyrenaicus/spothecat/releases/download/release/setup.sh).
 
