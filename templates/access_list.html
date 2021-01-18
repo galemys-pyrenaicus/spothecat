@@ -8,4 +8,14 @@
           <button type='submit'>Добавить пользователя</button>
   </form>
 </div>
+
+<div style='margin-top: 70px;'>
+  <h1>Список пользателей</h1>
+  <table>
+    <tr><td>Имя пользователя</td><td>Пароль</td><td>Роль</td><td>Активный</td>
+    {% for user in users_list %}
+            <tr><td>{{ user[0] }}</td><td>{{ user[1] }}</td><td>{{ user[2] }}</td><td>{{ user[3] }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
 {% endblock %}

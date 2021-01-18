@@ -2,9 +2,9 @@
 dbuser_pass=$(openssl rand -base64 12)
 
 if VERB="$( which apt )" 2> /dev/null; then
-  sudo apt install git python3 postgresql93 postgresql93-contrib
+  sudo apt install git python3.6 postgresql93 postgresql93-contrib
 elif VERB="$( which yum )" 2> /dev/null; then
-  sudo dnf install git python3 glibc-locale-source glibc-langpack-ru
+  sudo dnf install git python3.6 glibc-locale-source glibc-langpack-ru
   sudo dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   sudo dnf -qy module disable postgresql
   sudo dnf install -y postgresql96-server

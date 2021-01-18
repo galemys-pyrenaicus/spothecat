@@ -19,7 +19,7 @@
 </script>
 <body>
   <div class="header">
-  <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/{{ user }}/" class="logo">
+  <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/" class="logo">
     <div style="display:table-row; vertical-align: middle; color:white">
         <div style="display:table-cell; vertical-align: middle; color:white;"><img src = "/static/stc.png" height="50px"></div>
         <div style="display:table-cell; vertical-align: middle; color:white; padding-left:10px;"> Spot the cat</div>
@@ -52,9 +52,9 @@
   {% else %}
     <div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
       <a href=""><i class="material-icons">face</i><span class="icon-text">Алоха, {{ user }} </span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/{{ user }}"><i class="material-icons">map</i><span class="icon-text"></span>Карта</a></span></a>
+      <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/"><i class="material-icons">map</i><span class="icon-text"></span>Карта</a></span></a>
       <a href="http://{{ srv_address }}:{{ srv_port }}/adduser"><i class="material-icons">list</i><span class="icon-text"></span>Список доступа<span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/{{ user }}/log_page"><i class="material-icons">email</i><span class="icon-text"></span>Логи<span></a>
+      <a href="http://{{ srv_address }}:{{ srv_port }}/log_page"><i class="material-icons">email</i><span class="icon-text"></span>Логи<span></a>
       <a href="http://{{ srv_address }}:{{ srv_port }}/logout"><i class="material-icons">eject</i><span class="icon-text"></span>Выйти<span></a>
     </div>
   {% endif %}
