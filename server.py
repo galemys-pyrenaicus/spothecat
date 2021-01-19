@@ -1,5 +1,4 @@
-from flask import Flask, render_template, url_for, request, make_response
-from flask import jsonify
+from flask import Flask, render_template, url_for, request, make_response, flash, jsonify
 import flask
 import flask_login
 import wrapper
@@ -12,7 +11,6 @@ import logging
 
 config = configparser.ConfigParser()
 config.read('/etc/spothecat/spothecat.conf')
-
 try:
     dbcred = config['DATABASE']
     ffoncred = config['PHONE']
@@ -24,13 +22,15 @@ try:
 except:
     print ("Problem with config")
     sys.exit()
-
 def pass_config():
     return [dbcred, ffoncred, gmapcred, logs, srv]
 
+connlocadb = psycopg2.connect(dbname=dbcred['dbname'], user=dbcred['dbuser'], password=dbcred['dbpass'], host=dbcred['dbhost'])
+
+
+
 app = Flask(__name__)
 pass_config()
-user='desman'
 
 try:
     os.remove('/tmp/spot')
@@ -45,14 +45,30 @@ app.secret_key = 'kawasaki'
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
-users = {'desman': {'password': ''}}
+def get_user(email):
+    cursor = connlocadb.cursor()
+    cursor.execute("SELECT * FROM users WHERE login='"+email+"'")
+    queryres = cursor.fetchone()
+    if cursor.rowcount == 0:
+        return "NONEXIST"
+    else:
+        return queryres
+
+def del_user(email):
+    cursor = connlocadb.cursor()
+    try:
+        cursor.execute("DELETE FROM users WHERE login='"+email+"'")
+        connlocadb.commit()
+        return True
+    except:
+        return False
 
 class User(flask_login.UserMixin):
     pass
 
 @login_manager.user_loader
 def user_loader(email):
-    if email not in users:
+    if get_user(email) == "NONEXIST":
         return
     user = User()
     user.id = email
@@ -61,12 +77,14 @@ def user_loader(email):
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    if email not in users:
+    email = str(email)
+    if get_user(email) == "NONEXIST":
         return
-
     user = User()
     user.id = email
-    user.is_authenticated = request.form['password'] == users[email]['password']
+    passhash_db = get_user(email)[1]
+    passhash_form = hashlib.sha256(request.form['password'].encode('utf8')).hexdigest()
+    user.is_authenticated = passhash_form == passhash_db
     return user
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -81,26 +99,31 @@ def login():
                '''
 
     email = flask.request.form['email']
-    if flask.request.form['password'] == users[email]['password']:
+    email = str(email)
+    passhash_db = get_user(email)[1]
+    passhash_form = hashlib.sha256(request.form['password'].encode('utf8')).hexdigest()
+    if passhash_form == passhash_db:
         user = User()
         user.id = email
         flask_login.login_user(user)
         return flask.redirect(flask.url_for('protected'))
-
     return 'Bad login'
 
-@app.route('/adduser', methods=['GET', 'POST'])
+@app.route('/adduser', methods=['GET', 'POST']) #User management page
 def adduser():
+    cursor = connlocadb.cursor()
+    connlocadb.commit()
+    cursor.execute("SELECT * FROM users")
+    queryresl = cursor.fetchall()
     if request.method == "POST":
         req = request.form
         adduser_username = req.get('username')
         adduser_pass_hashed = hashlib.sha256(req.get('password').encode('utf8')).hexdigest()
-        connlocadb = psycopg2.connect(dbname=dbcred['dbname'], user=dbcred['dbuser'], password=dbcred['dbpass'], host=dbcred['dbhost'])
         cursor = connlocadb.cursor()
         query = "INSERT INTO users (login, pass_hash, role, active) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (adduser_username, adduser_pass_hashed, 'admin', 'true'))
-        connlocadb.commit()
-    return render_template("access_list.html", user=flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
+        return flask.redirect('/adduser')
+    return render_template("access_list.html", users_list=queryresl, user=flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
 
 @app.route('/protected')
 @flask_login.login_required
@@ -120,36 +143,36 @@ def unauthorized_handler():
 def index():
     return render_template('index.html', stranger=True)
 
-@app.route('/spothecat/'+user+'/')
+@app.route('/spothecat/')
 def userpage():
     try:
         f = open('/tmp/spot', "r")
         started=True
     except:
         started=False
-    return render_template("userpage.html", user=flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template("userpage.html", user = flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
 
-@app.route('/'+user+'/map/', methods=['GET', 'POST'])
+@app.route('/map/', methods=['GET', 'POST'])
 def mapping():
     try:
         f = open('templates/whereami_map.html', "r")
         address = 'whereami_map.html'
     except:
         address = 'nomap.html'
-    response = make_response(render_template(address, user=flask_login.current_user.id))
+    response = make_response(render_template(address))
     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.header = 'no-cache'
     return response
 
-@app.route('/' + user + '/log_page/')
+@app.route('/log_page/')
 def log_page():
-    return render_template('log_page.html', user=flask_login.current_user.id, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template('log_page.html', user = flask_login.current_user.id, srv_port=srv['port'], srv_address=srv['address'])
 
 @app.route('/logs/')
 def logs():
     with open("/var/log/spothecat.log", "r") as f:
         content = f.read()
-    return render_template("log.html", content=content, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template("log.html", user = flask_login.current_user.id, content=content, srv_port=srv['port'], srv_address=srv['address'])
 
 @app.route('/runscript', methods=['GET', 'POST'])
 def runscript():
@@ -161,6 +184,15 @@ def stopscript():
     wrapper.stop()
     print (url_for('userpage'))
     return flask.redirect(url_for('userpage'))
+
+@app.route('/deleteuser/<username>')
+def deleteuser(username):
+    if del_user(username):
+        flash('Пользователь удалён')
+    else:
+        flash('Произошла ошибка при удалении пользователя')
+    return flask.redirect('/adduser')
+
 
 
 if __name__ == '__main__':
