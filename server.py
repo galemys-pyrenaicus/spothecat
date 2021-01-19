@@ -27,15 +27,13 @@ def pass_config():
 
 connlocadb = psycopg2.connect(dbname=dbcred['dbname'], user=dbcred['dbuser'], password=dbcred['dbpass'], host=dbcred['dbhost'])
 
-
-
 app = Flask(__name__)
 pass_config()
 
 try:
     os.remove('/tmp/spot')
 except:
-    print("Token absent")
+    logging.info("Started")
 
 started=False
 
@@ -53,7 +51,6 @@ def get_user(email):
         return "NONEXIST"
     else:
         return queryres
-
 def del_user(email):
     cursor = connlocadb.cursor()
     try:
@@ -107,9 +104,10 @@ def login():
         user.id = email
         flask_login.login_user(user)
         return flask.redirect(flask.url_for('protected'))
-    return 'Bad login'
+    return render_template('index.html', stranger=True, srv_port=srv['port'], srv_address=srv['address'], failedlogin=True)
 
 @app.route('/adduser', methods=['GET', 'POST']) #User management page
+@flask_login.login_required
 def adduser():
     cursor = connlocadb.cursor()
     connlocadb.commit()
@@ -137,11 +135,11 @@ def logout():
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
-    return flask.redirect(url_for('index', fuckoff=True))
+    return flask.redirect('/')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html', stranger=True)
+    return render_template('index.html', stranger=True, srv_port=srv['port'], srv_address=srv['address'], failedlogin=False)
 
 @app.route('/spothecat/')
 def userpage():
@@ -165,6 +163,7 @@ def mapping():
     return response
 
 @app.route('/log_page/')
+@flask_login.login_required
 def log_page():
     return render_template('log_page.html', user = flask_login.current_user.id, srv_port=srv['port'], srv_address=srv['address'])
 
@@ -193,5 +192,9 @@ def deleteuser(username):
         flash('Произошла ошибка при удалении пользователя')
     return flask.redirect('/adduser')
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return flask.redirect('/')
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0')

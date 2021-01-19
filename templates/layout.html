@@ -19,10 +19,26 @@
 </script>
 <body>
   <div class="header">
+  {% if stranger %}
+  <a href="http://{{ srv_address }}:{{ srv_port }}" class="logo">
+  {% else %}
   <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/" class="logo">
+  {% endif %}
     <div style="display:table-row; vertical-align: middle; color:white">
-        <div style="display:table-cell; vertical-align: middle; color:white;"><img src = "/static/stc.png" height="50px"></div>
-        <div style="display:table-cell; vertical-align: middle; color:white; padding-left:10px;"> Spot the cat</div>
+        <div style="display:table-cell; vertical-align: middle; color:white;">
+          {% if failedlogin %}
+          <img src = "/static/evilcat.webp" height="50px"></div>
+          {% else %}
+          <img src = "/static/stc.png" height="50px"></div>
+          {% endif %}
+
+        <div style="display:table-cell; vertical-align: middle; color:white; padding-left:10px;">
+          {% if failedlogin %}
+          Wrong CAT!
+          {% else %}
+          Spot the cat
+          {% endif %}
+        </div>
       </table>
     </div>
   </a>
@@ -36,7 +52,6 @@
   </div>
   {% endif %}
 </div>
-
 
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   {% if stranger %}
