@@ -9,12 +9,21 @@
   </form>
 </div>
 
-<div style='margin-top: 70px;'>
+<div style='margin-top: 70px;"'>
   <h1>Список пользателей</h1>
-  <table>
-    <tr><td>Имя пользователя</td><td>Пароль</td><td>Роль</td><td>Активный</td>
+  <table style="width:80%; table-layout: fixed; text-overflow:ellipsis;" id="user_list">
+    <tr><td style="width: 200px;">Имя пользователя</td><td style="width: 100px;">Роль</td><td>Активный</td><td>Action</td>
     {% for user in users_list %}
-            <tr><td>{{ user[0] }}</td><td>{{ user[1] }}</td><td>{{ user[2] }}</td><td>{{ user[3] }}</td></tr>
+            <tr><td>{{ user[0] }}</td><td>{{ user[2] }}</td><td>
+                {% if user[3] %}
+                  <i class="material-icons">check_circle</i>
+                {% else %}
+                {% endif %}
+            </td>
+            <td>
+              <a href="/deleteuser/{{ user[0] }}" style="color:black"><i class="material-icons">delete_forever</i></a>
+              </td>
+            </tr>
     {% endfor %}
   </table>
 </div>

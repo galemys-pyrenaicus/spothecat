@@ -1,5 +1,4 @@
-from flask import Flask, render_template, url_for, request, make_response
-from flask import jsonify
+from flask import Flask, render_template, url_for, request, make_response, flash, jsonify
 import flask
 import flask_login
 import wrapper
@@ -54,6 +53,15 @@ def get_user(email):
         return "NONEXIST"
     else:
         return queryres
+
+def del_user(email):
+    cursor = connlocadb.cursor()
+    try:
+        cursor.execute("DELETE FROM users WHERE login='"+email+"'")
+        connlocadb.commit()
+        return True
+    except:
+        return False
 
 class User(flask_login.UserMixin):
     pass
@@ -175,6 +183,16 @@ def stopscript():
     wrapper.stop()
     print (url_for('userpage'))
     return flask.redirect(url_for('userpage'))
+
+@app.route('/deleteuser/<username>')
+def deleteuser(username):
+    if del_user(username):
+        flash('Пользователь удалён')
+        return flask.redirect('/adduser')
+    else:
+        flash('Произошла ошибка при удалении пользователя')
+        return flask.redirect('/adduser')
+
 
 
 if __name__ == '__main__':
