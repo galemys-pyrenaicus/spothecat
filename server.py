@@ -193,7 +193,5 @@ def deleteuser(username):
         flash('Произошла ошибка при удалении пользователя')
     return flask.redirect('/adduser')
 
-
-
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
