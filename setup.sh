@@ -37,7 +37,7 @@ psql -h localhost -U postgres -d location -c 'CREATE TABLE public.location_parse
 psql -h localhost -U postgres -d location -c 'CREATE TABLE public.users (login text COLLATE pg_catalog."default" NOT NULL, pass_hash text COLLATE pg_catalog."default", role text COLLATE pg_catalog."default" NOT NULL, active boolean NOT NULL, address text COLLATE pg_catalog."default", connected text[] COLLATE pg_catalog."default", CONSTRAINT users_pkey PRIMARY KEY (login)) TABLESPACE pg_default;'
 psql -h localhost -U postgres -d location -c 'ALTER TABLE public.location_parsed OWNER to postgres;'
 psql -h localhost -U postgres -d location -c 'ALTER TABLE public.users OWNER to postgres;'
-psql -h localhost -U postgres -d location -c "INSERT INTO users (login, pass_hash, role, active) VALUES ('admin', '8C6976E5B5410415BDE908BD4DEE15DFB167A9C873FC4BB8A81F6F2AB448A918', 'admin', 'True')"
+psql -h localhost -U postgres -d location -c "INSERT INTO users (login, pass_hash, role, active) VALUES ('admin', '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918', 'admin', 'True')"
 
 cat > ~/spothecat.service << EOL
 [Unit]
