@@ -20,9 +20,9 @@
 <body>
   <div class="header">
   {% if stranger %}
-  <a href="http://{{ srv_address }}:{{ srv_port }}" class="logo">
+  <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}" class="logo">
   {% else %}
-  <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/" class="logo">
+  <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}/spothecat/" class="logo">
   {% endif %}
     <div style="display:table-row; vertical-align: middle; color:white">
         <div style="display:table-cell; vertical-align: middle; color:white;">
@@ -67,10 +67,10 @@
   {% else %}
     <div id="mySidebar" class="sidebar" onmouseover="toggleSidebar()" onmouseout="toggleSidebar()">
       <a href=""><i class="material-icons">face</i><span class="icon-text">Алоха, {{ user }} </span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/spothecat/"><i class="material-icons">map</i><span class="icon-text"></span>Карта</a></span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/adduser"><i class="material-icons">list</i><span class="icon-text"></span>Список доступа<span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/log_page"><i class="material-icons">email</i><span class="icon-text"></span>Логи<span></a>
-      <a href="http://{{ srv_address }}:{{ srv_port }}/logout"><i class="material-icons">eject</i><span class="icon-text"></span>Выйти<span></a>
+      <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}/spothecat/"><i class="material-icons">map</i><span class="icon-text"></span>Карта</a></span></a>
+      <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}/adduser"><i class="material-icons">list</i><span class="icon-text"></span>Список доступа<span></a>
+      <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}/log_page"><i class="material-icons">email</i><span class="icon-text"></span>Логи<span></a>
+      <a href="{{ protocol }}://{{ srv_address }}{{ srv_port }}/logout"><i class="material-icons">eject</i><span class="icon-text"></span>Выйти<span></a>
     </div>
   {% endif %}
 
