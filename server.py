@@ -37,6 +37,11 @@ except:
     logging.info("Started")
 
 started=False
+srv_port = ':' + srv['port']
+if srv['use_ssl'] == 'true':
+    use_ssl='https'
+else:
+    use_ssl='http'
 
 app = flask.Flask(__name__)
 app.secret_key = 'kawasaki'
@@ -96,7 +101,7 @@ def login():
         user.id = email
         flask_login.login_user(user)
         return flask.redirect(flask.url_for('protected'))
-    return render_template('index.html', stranger=True, srv_port=srv['port'], srv_address=srv['address'], failedlogin=True)
+    return render_template('index.html', stranger=True, srv_port=srv_port, srv_address=srv['address'], failedlogin=True, protocol=use_ssl)
 
 @app.route('/adduser', methods=['GET', 'POST']) #User management page
 @flask_login.login_required
@@ -113,7 +118,7 @@ def adduser():
         query = "INSERT INTO users (login, pass_hash, role, active) VALUES (%s, %s, %s, %s)"
         cursor.execute(query, (adduser_username, adduser_pass_hashed, 'admin', 'true'))
         return flask.redirect('/adduser')
-    return render_template("access_list.html", users_list=queryresl, user=flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template("access_list.html", users_list=queryresl, user=flask_login.current_user.id, started=started, srv_port=srv_port, srv_address=srv['address'], protocol=use_ssl)
 
 @app.route('/protected')
 @flask_login.login_required
@@ -131,7 +136,7 @@ def unauthorized_handler():
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html', stranger=True, srv_port=srv['port'], srv_address=srv['address'], failedlogin=False)
+    return render_template('index.html', stranger=True, srv_port=srv_port, srv_address=srv['address'], failedlogin=False, protocol=use_ssl)
 
 @app.route('/spothecat/')
 def userpage():
@@ -140,7 +145,7 @@ def userpage():
         started=True
     except:
         started=False
-    return render_template("userpage.html", user = flask_login.current_user.id, started=started, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template("userpage.html", user = flask_login.current_user.id, started=started, srv_port=srv_port, srv_address=srv['address'], protocol=use_ssl)
 
 @app.route('/map/', methods=['GET', 'POST'])
 def mapping():
@@ -157,13 +162,13 @@ def mapping():
 @app.route('/log_page/')
 @flask_login.login_required
 def log_page():
-    return render_template('log_page.html', user = flask_login.current_user.id, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template('log_page.html', user = flask_login.current_user.id, srv_port=srv_port, srv_address=srv['address'], protocol=use_ssl)
 
 @app.route('/logs/')
 def logs():
     with open("/var/log/spothecat.log", "r") as f:
         content = f.read()
-    return render_template("log.html", user = flask_login.current_user.id, content=content, srv_port=srv['port'], srv_address=srv['address'])
+    return render_template("log.html", user = flask_login.current_user.id, content=content, srv_port=srv['port'], srv_address=srv['address'], protocol=use_ssl)
 
 @app.route('/runscript', methods=['GET', 'POST'])
 def runscript():
@@ -189,4 +194,4 @@ def page_not_found(e):
     return flask.redirect('/')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug = True)
