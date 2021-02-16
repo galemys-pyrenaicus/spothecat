@@ -51,7 +51,7 @@ login_manager.init_app(app)
 
 def get_user(email):
     cursor = connlocadb.cursor()
-    cursor.execute("SELECT * FROM users WHERE login='"+email+"'")
+    cursor.execute("SELECT * FROM users WHERE login=%s", (email,))
     queryres = cursor.fetchone()
     if cursor.rowcount == 0:
         return "NONEXIST"
@@ -60,7 +60,7 @@ def get_user(email):
 def del_user(email):
     cursor = connlocadb.cursor()
     try:
-        cursor.execute("DELETE FROM users WHERE login='"+email+"'")
+        cursor.execute("SELECT * FROM users WHERE login=%s", (email,))
         connlocadb.commit()
         return True
     except:
@@ -150,7 +150,7 @@ def userpage():
 @app.route('/map/', methods=['GET', 'POST'])
 def mapping():
     try:
-        f = open('templates/whereami_map.html', "r")
+        f = open('/var/www/spothecat/templates/whereami_map.html', "r")
         address = 'whereami_map.html'
     except:
         address = 'nomap.html'
@@ -194,4 +194,4 @@ def page_not_found(e):
     return flask.redirect('/')
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug = True)
+    app.run(host='0.0.0.0')
